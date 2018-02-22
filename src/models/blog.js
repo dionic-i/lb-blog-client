@@ -31,18 +31,16 @@ export default {
 		*fetch({payload}, {call, select, put}) {
 			const {id} = payload;
 			const articles = yield call(blogArticles, payload.id);
+			const {list} = articles;
 
-			let blog = yield select(state => {
-				return state.blogs.list.find((item) => item.id == id)
-			});
+			const data = yield call(findById, payload.id);
+			const blog = {
+				id: data.id,
+				title: data.title,
+				description: data.description,
+			};
 
-			// Если блога нет, то вытащим его с сервера.
-			if (!blog) {
-				const data = yield call(findById, payload.id);
-				blog = data.data;
-			}
-
-			yield put({type: 'show', payload: {id, blog, list: articles.data}});
+			yield put({type: 'show', payload: {id, blog, list}});
 		},
 	},
 

@@ -9,6 +9,7 @@ const app = dva();
 
 // 3. Model
 app.model(require('./models/menu').default);
+app.model(require('./models/dashboard').default);
 app.model(require('./models/blogs').default);
 app.model(require('./models/blog').default);
 app.model(require('./models/article').default);

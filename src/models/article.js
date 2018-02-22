@@ -29,7 +29,7 @@ export default {
 	effects: {
 		*fetch({payload}, {call, put}) {
 			const item = yield call(findOne, payload.id);
-			yield put({type: 'show', payload: {item: item.data}});
+			yield put({type: 'show', payload: {item: item}});
 		},
 	},
 

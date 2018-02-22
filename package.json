@@ -11,6 +11,7 @@
     "axios": "^0.17.1",
     "dva": "^2.1.0",
     "dva-loading": "^1.0.4",
+    "js-cookie": "^2.2.0",
     "mockjs": "^1.0.1-beta3",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",

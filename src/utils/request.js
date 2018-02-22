@@ -1,30 +1,49 @@
-import fetch from 'dva/fetch';
+/* global window */
+import axios from 'axios';
+import lodash from 'lodash';
+import Cookies from 'js-cookie';
 
-function parseJSON(response) {
-	return response.json();
-}
+export default function request(options) {
+	const token = Cookies.get('authorized');
 
-function checkStatus(response) {
-	if (response.status >= 200 && response.status < 300) {
-		return response;
+	if (token) {
+		options = lodash.extend(options, {
+			headers: {
+				'authorized': token
+			},
+			params : lodash.extend(options.params || {}, {
+				access_token: token
+			})
+		});
 	}
 
-	const error = new Error(response.statusText);
-	error.response = response;
-	throw error;
-}
+	return axios.request(options).then((response) => {
+		const {statusText, status} = response;
+		let data = response.data;
+		if (data instanceof Array) {
+			data = {
+				list: data,
+			}
+		}
 
-/**
- * Requests a URL, returning a promise.
- *
- * @param  {string} url       The URL we want to request
- * @param  {object} [options] The options we want to pass to "fetch"
- * @return {object}           An object containing either "data" or "err"
- */
-export default function request(url, options) {
-	return fetch(url, options)
-		.then(checkStatus)
-		.then(parseJSON)
-		.then(data => ({data}))
-		.catch(err => ({err}));
+		return Promise.resolve({
+			success   : true,
+			message   : statusText,
+			statusCode: status,
+			...data,
+		});
+	}).catch((error) => {
+		const {response} = error;
+		let msg;
+		let statusCode;
+		if (response && response instanceof Object) {
+			const {data, statusText} = response;
+			statusCode = response.status;
+			msg = data.message || statusText
+		} else {
+			statusCode = 600;
+			msg = error.message || 'Network Error';
+		}
+		return Promise.reject({success: false, statusCode, message: msg})
+	})
 }

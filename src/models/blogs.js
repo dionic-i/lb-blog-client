@@ -23,7 +23,8 @@ export default {
 	effects: {
 		*fetch({payload}, {call, put}) {
 			const blogs = yield call(query);
-			yield put({type: 'show', payload: {list: blogs.data}});
+			const {list} = blogs;
+			yield put({type: 'show', payload: {list}});
 		},
 	},
 
